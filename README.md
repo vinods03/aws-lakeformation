@@ -1,4 +1,13 @@
-# aws-lakeformation
+In this project, we see how to:
+
+1. bring data from RDS, Kinesis, DynamoDB (apart from direct uploads) into a S3 data lake (raw layer) using blueprints, ETL Glue jobs.
+2. profile / cleanse the data using DataBrew (profile with/without DQ rules and cleanse using Recipes).
+3. transform/move data across layers (raw -> processed -> redshift warehouse) using ETL Glue jobs. Note that raw and processed layers are in Data Lake and redshift is a warehouse.
+4. secure the data in the datalake using permissions for users/roles/groups and LakeFormation-Tags.
+5. query data in S3 Data Lake from Redshift, without moving the data into Redshift (using Redshift Serverless -> External Schema pointing to Glue Data Catalog).
+6. identify sensitive data in our S3 buckets using Amazon Macie.
+
+# LakeFormation important concepts
 
 A lakeformation BLUEPRINT is essentially a glue workflow that has a glue job to move data across layers, a glue crawler to create glue data catalog tables etc. 
 Refer "3. Populate tables in mysql RDS and bring data into S3 raw layer.txt" for more details.
