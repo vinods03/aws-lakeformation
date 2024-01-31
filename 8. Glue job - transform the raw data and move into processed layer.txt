@@ -1,0 +1,13 @@
+This is a typical ETL job that moves data from one layer to another layer. 
+I created a Glue Spark ETL job with source as Glue Data Catalog table - vinod-lakeformation-raw-database.sales_customer, Transformation as "Select fields" and Target as S3 bucket/folder s3://vinod-lakeformation-processed-bucket/input/customers/. In the target i also chose to "Create a table in the Data Catalog and on subsequent runs, keep existing schema and add new partitions", the glue job must have the required permissions to create table. We might also have to check if the lakeformation user executing the job has teh required permissions for this.
+
+The difference between Glue job and Databrew Recipe-job ?
+Note that a Databrew job created out of a Recipe can also be used to move data from one layer into another layer.
+A Glue ETL job might have a few more transformation functions compared to a databrew recipe-job like say, explode array or map into rows, SQL query to apply more complex logic etc.
+A Databrew recipe-job might have few more data-cleansing functions compared to a Glue ETL job like say, Outliers (remove/replace outliers), Mapping of categorical columns etc.
+However, as a best practice, use the databrew recipe-job in the context Data Quality - i.e. cleansing data and a Glue ETL job as a pure ETL job that transforms and moves data across layers.
+
+Note: You can bring data from DynamoDB also into S3. 
+First, create a crawler/glue data catalog table on the dynamodb table. 
+Then create a Glue ETL job with source as the glue data catalog table and target as required location/layer in S3.
+You can also use DynamoDB directly as the source (instead of a Data catalog table).

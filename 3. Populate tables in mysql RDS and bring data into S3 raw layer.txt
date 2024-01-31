@@ -1,0 +1,44 @@
+1. Once RDS MySQL database is created, connect using MySQL workbench.
+
+2. File -> Run SQL Script -> C:\Vinod\AWSDataEngineering\10. AWS Lake Formation\data\world-db
+
+3. Check if you are able to query the loaded data using below commnds:
+   use `world`;
+   select * from city;
+
+4. Go to AWS Lake Formation -> Blueprints -> Use blueprint -> Incremental database
+
+5. For source database connection, go to Glue Console and create a RDS, MySQL connection to the database created in 1st step.
+
+I got the below error first:
+InvalidInputException: VPC S3 endpoint validation failed for SubnetId: subnet-0d6363650f81c6565. VPC: vpc-097cd07081c9415ca. Reason: Could not find S3 endpoint or NAT gateway for subnetId: subnet-0d6363650f81c6565 in Vpc vpc-097cd07081c9415ca
+To fix this, Go to VPC -> Endpoints - create a S3 gateway endpoint in the VPC of the RDS database.
+
+Then, I got the below error:
+At least one security group must open all ingress ports.
+To limit traffic, the source security group in your inbound rule can be restricted to the same security group
+To fix this, in the security group associated with the RDS database, if only MySQL traffic on port 3306 is allowed for all hosts (or even specific hosts), add another rule with All TCP traffic on all ports with source as the same security group (mysql-sg) (cyclic reference)
+
+Even after this Test connection was failing with error:
+ERROR StatusLogger Unrecognized format specifier [thread]
+
+However i moved on to next step and other steps worked fine !!
+
+6. Coming back to the Blueprints window, use Incremental database snapsot, provide the source connection details created above, bookmark column details.
+   On the Target side, provide the raw database, bucket details and format as parquet.
+   Provide a name for the blueprint.
+   Blueprint is nothing but a glue workflow.
+   Start the blueprint / workflow. 
+   You will see data from MySQL database is copied into S3 raw layer and also crawler on this data is created/executed, glue data catalog tables is created.
+   The data is now queryable in Athena.
+
+
+Summarizing:
+
+By using a Lakeformation blueprint that has source database connection details, target bucket/catalog details, we have been able to move RDS MySQL data into S3, Glue Data Catalog. 
+A blueprint is essentially a glue workflow that has glue crawler to create glue data catalog tables, glue job that moves data across layers etc.
+
+Note that, the target of the blueprint seems to always be S3/Glue Catalog. 
+If you want to move the data into Redshift, you cannot use the blueprint. You will have to use the Glue ETL job for that.
+
+Also, note that, a blueprint is a little like DMS where you can bulk-copy your database or perform incremental data load etc.

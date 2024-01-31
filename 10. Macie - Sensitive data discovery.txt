@@ -1,0 +1,47 @@
+Amazon Macie is a data security service that discovers sensitive data using machine learning and pattern matching, provides visibility into data security risks, and enables automated protection against those risks.
+
+In the AWS Console, search for Macie:
+As soon as you enable Macie, you will get some generic info about your S3 buckets like number of buckets that are publicly accessible, number of buckets that do not have encryption enabled, number of buckets that are shared etc.
+
+================================ Automated Sensitive data discovery ============================
+
+To show data sensitivity statistics, enable automated sensitive data discovery for your account.
+Under settings -> Discovery results -> configure a bucket for storing sensitive data discovery results.
+
+If you enable automated sensitive data discovery, Macie continually evaluates your S3 bucket inventory in the current AWS Region and uses sampling techniques to identify and select representative objects from your buckets. Macie retrieves and analyzes the selected objects, inspecting them for sensitive data.
+Use these settings to tailor the analyses:
+Specify buckets to exclude. By default, Macie selects objects from all of your buckets.
+Specify managed data identifiers, custom data identifiers, and allow lists to use. By default, Macie analyzes objects by using only a specific set of managed data identifiers.
+
+As the analysis progresses each day, Macie updates statistics and other information that it provides about your Amazon S3 data. 
+Macie also produces records of the sensitive data that it finds and the analysis that it performs:
+Sensitive data findings, which report sensitive data that Macie finds in individual objects.
+Sensitive data discovery results, which log details about the analysis of individual objects.
+
+You can disable automated sensitive data discovery at any time. 
+Macie then stops performing all automated discovery activities for your account in the current Region. 
+In addition, you lose access to all statistical and other data that Macie produced and directly provided while performing those activities. 
+If you don't re-enable automated discovery within 30 days of disabling it, Macie permanently deletes this data.
+
+=============================== Manual Sensitive data discovery job ===========================
+
+You can also create jobs - on all or specific S3 buckets, specify the frequency of the job, select the required managed data identifiers (like driver license, passport number etc) / custom data identifers based on which senstive data is detected. You can also define an "allow list" (an allow list defines specific text or a text pattern to ignore for sensitivity classification).
+
+Creation of custom data identifiers:
+Apart from the list of managed data identifiers that Amazon provides to detect sensitive information, we can create custom data identifiers by providing a regex/keywords to match etc. 
+We can also provide a list of Ignore words and customize the severity level based on the number of occurrences of the sensitive info.
+
+I create a custom data identifier dob with regex ^\d{2}\/\d{2}\/\d{4}$.
+For Severity, I used 1 or more as Low, 2 or more as Medium and 100 or more as High.
+I created a job on the S3 bucket vinod-lakeformation-raw-bucket with the above custom data identifier.
+Upon completion of the job, under Findings tab - By bucket - i was able to see 4 High and 7 medium findings.
+Thiss means 4 files had more than 100 dates-of-birth and 7 files had >= 2 and < 100 dates-of-birth.
+Click on the "High" and i was able to see the 4 exact file names that had more than 100 dates of birth.
+Same for "Medium".
+The "finding type" will be "SensitiveData:S3Object/CustomIdentifier" for all of these. When you click on this, you will be able to see the exact custom data identifier that violated the sensitivity.
+
+Note that, Macie stores the results for only 90 days. After that, you can't access them directly with Macie. 
+Instead, choose Edit, and then configure Macie to store them in an S3 bucket forever.
+
+
+======= Make sure you disable Macie and Automated data discovery after completing the tests. 

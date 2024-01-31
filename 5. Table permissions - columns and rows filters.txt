@@ -1,0 +1,39 @@
+From vinods_rect root login, created 2 new users lakeformation_user1, lakeformation_user2 with Admin access
+
+Logged in as lakeformation_admin
+
+Select a table -> Actions -> Permissions -> Grant -> Choose iam user/role -> lakeformation_user1
+
+Named data catalog resources
+
+Choose DB, table and proviode required permission (select, insert etc)
+
+Apply row-level filter, colum-level filter
+
+For column level filter, i excluded dob, address.
+
+Or you can create a data filter that combines row and column level filters.
+
+I created a customer_filter data filter with row filter exp customer_id != 1 and excluding columns address, dob
+
+Make Lake Formation permissions effective immediately
+
+Now login as lakeformation_user1 and verify the 2 columns and 1 row are not showing up.
+
+
+==== Another way to secure the tables is through LF tags -> LakeFormation Tags
+
+AWS Lake Formation, LF-Tags and permissions, Add LF-Tag -> Key = Confidentiality , Values = public, private
+
+Go to a table mysql__world_city -> Actions -> Edit LF Tags -> Assign Tag -> Confidentiality -> private
+
+Now go to Lake Formation -> Permissions -> Data lake permissions -> Grant -> IAM user lakeformation_user2
+Resources matched by LF-Tags > Assign LF Tag -> Confidentiality = public
+Db permissions -> Describe, Table permissions -> Select
+
+By defining table as private and the particular IAM user as public, you are making sure this user does not hve accees to this table.
+
+You can have another table with Confidentiality = public but the LF tag of one of teh columns can be overridden to private.
+So the public user cannot see tihs column alone.
+
+***********  This LF-tag part did not work for me ***********

@@ -1,0 +1,78 @@
+============ Data profile - Data Quality rules - Data profile job ====================
+
+In the AWS Console - search for Databrew.
+
+Go to the Datasets tab - Connect new dataset - All AWS Glue tables - vinod-lakeformation-raw-database/sales-customer and name it as sales-customer as "_" is not allowed in dataset name.
+
+Now click on the sales-customer dataset and you will see 5 different tabs
+
+From the "Data profile overview" tab, Run data profile, provide a name for the data profile job, provide output location s3://vinod-lakeformation-processed-bucket/input/data-preparation/.
+
+I enabled duplicate rows count detection, correlations matrix for first 10 numeric columns.
+
+Selected all columns for columsn to profile, enabled all statistics, enabled outlier detection, distinct values, value/z-score distribution etc.
+
+I did not create a DQ rule initially.
+
+In the job settings, i changed timeout to 10 minutes and number of retries to 1. Enabled cloudwatch logs for the job.
+
+Create and run job.
+
+Once the job completes, in the Data profile overview section, you will see table level summary and columns summary.
+In the table level summary, you see total rows, total columns, how many columns in different data types, valid / missing columns, valid / duplicate rows etc.
+In the column level summary, you will see different levels of details based on data type. 
+For int columns, you can see min value, max value, mean value, outliers, skew, box plot etc.
+For string columns, you will see min string length, max string length etc.
+For all columns, you wwill see number of valid/missing values, distinct values, unique values, distribution etc.
+
+In the Column Statistics tab, you can see more stats like the top distinct values in each column etc.
+
+In the DQ rules tab, you can view the various DQ rules on the different columns.
+
+In the Data Lineage tab, you can see the lineage like: Glue Data Catalog table -> Databrew dataset -> Data bre Data profile job -> S3 output location.
+
+After the first successful run of the profile job, i clicked on the Dataset -> Data Quality rules and Apply DQ ruleset. 
+You will be taken to the DQ rules tab where you first need to create a DQ ruleset.
+I created a ruleset with 1 rule -> Column Prefix must have only the values MR., MS., DR., MRS.
+I then applied this ruleset on the dataset.
+Ran the profile job again. 
+Now, in the Data Quality rules tab, i could see the Rule has failed 95% succeeded and 5% failed. The threshold we set was 100% success.
+
+=========== Data transformation - Recipe - Data transformation job ==================
+
+Create a project - my-first-databrew-project - and a new recipe along with it my-first-databrew-project-recipe. Select sales-customer from My datasets tab.
+
+For sampling of the dataset, i chose Random 1000 rows.
+
+Created a new IAM role for this project with suffix "lakeformation".
+
+After you have run the Data profile job, come back to Projects tab and click on the project created above. You will be able to see the dataset and all possible transformations above.
+
+I did a MERGE of Prefix, First Name, Middle Name, Last Name, Suffix to create a new column Full_name
+
+I then did a CLEAN (remove all special characters) from Address ccolumn.
+
+All these transformations will keep getting added to a Recipe.
+
+I then clicked on Column - Rename - dob to Date_of_birth.
+
+Also, you can click on the 3 dots at the top of each column to apply different transformations. 
+
+Clicked on Date_of_birth and changed "format" to yyyy-mm-dd.
+
+You can also click on "MISSING" transformation and choose to fill miising values with null, with the most frequent value etc.
+
+You can also SPLIT the Date_of_birth into year, month, date by specifying the delimiter as "-".
+
+All these transformations are added as "steps" into a "Recipe".
+
+Once all required transformations are done, you can choose to "Publish" your recipe my-first-databrew-project-recipe.
+
+Note that you can also perform more complex transformations like Join. group by etc. Just make sure you have all required data in the Datasets tab.
+Datasets tab - Connect new dataset - All AWS Glue tables.
+
+Once a Recipe is created, you can create a Job using this recipe. Make sure you apply this on the required dataset. Set the output location, format/compression as Parquet/Snappy etc.
+
+Also make sure your review the Glue job settings - Timeout = 10 mins, number of retries = 1 etc.
+
+Note: I set the output location as s3://vinod-lakeformation-processed-bucket/input/data-preparation. After the job completed, i could see a sub-folder created here. Clicked on the file underneath the sub-folder -> Actions -> Query with S3 select -> input format = parquet, output format = csv -> Run the SQL query and quickly validate the results are as expected.

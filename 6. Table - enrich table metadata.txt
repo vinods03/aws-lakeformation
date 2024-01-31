@@ -1,0 +1,5 @@
+Click on a table in AWS Lakeformation
+
+Edit table  -> Advanced properties -> Add a property, say Key is department and value is sales.
+
+Now, go back to the Lakeformation tables dashboard that has the liust of all tables and search for department:sales and the specific tabl/tables with this property will show up.

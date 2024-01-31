@@ -1,0 +1,10 @@
+1. Upload customer.csv at s3://vinod-lakeformation-raw-bucket/input/customer
+
+2. From Lake Formation, create Crawler - vinod-lakeformation-raw-customer-crawler - on above path. Provide the database as vinod-lakeformation-raw-database and table prefix as sales_.
+
+3. I used the MyGlueRoleWithAdminAccess role for the crawler.
+
+4. Upon running the Glue crawler and after it completed, verify that the sales_customer table is created in vinod-lakeformation-raw-database
+
+5. Open Athena and try to run a query on this table. It failed for me. 
+   Then in Athena - Settings - I gave the Query result location as s3://vinod-lakeformation-raw-bucket/athena/ and then tried again. It worked.

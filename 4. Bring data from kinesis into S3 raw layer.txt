@@ -1,0 +1,9 @@
+Create a Kinesis delivery stream with source as direct Put and destination as s3://vinod-lakeformation-raw-bucket/kinesis-data/
+
+Then click on Test with demo data -> Start sending demo data
+
+Once you have enough data in S3, stop sending demo data.
+
+From Lakeformation console, Create crawler on the above s3 path and run it.
+
+Check if table is available in data catalog and query from Athena.

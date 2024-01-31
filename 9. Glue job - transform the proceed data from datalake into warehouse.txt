@@ -1,0 +1,27 @@
+Create a redshift cluster with dev database.
+In dev database create a ecommerce schema.
+In ecommerce schema create a customer table similar to "vinod-lakeformation-processed-database"."processed_customer" but with customer_id as int instead of long.
+
+create schema ecommerce;
+
+CREATE TABLE ecommerce.customers(
+  customer_id int, 
+  prefix varchar(10), 
+  first_name varchar(100), 
+  last_name varchar(100), 
+  gender varchar(5));
+
+In Glue Studio, create a Redshift connector.
+Create a Glue job with source as Glue Data Catalog table "vinod-lakeformation-processed-database"."processed_customer" and target as redshift ecommerce table "customers".
+Use the connector created above for the glue job to be able to identify the redshift url/credentials.
+
+Run the glue job and validate the data in Redshift.
+
+==============
+
+Also, you can query S3 datalake directly from Redhsift instead of copying teh data into Redshift.
+Go to the Query Editor in Redshift Serverless.
+From the top, left, Create Schema (note that you need to have a cluster/workgroup in order to be able to use this feature) -> External -> Glue Data Catalog -> vinod-lakeformation-processed-database = Give a name for this extrnal schema, say "datalake".
+
+Now, you can query S3 using:
+select * from datalake.processed_customer;

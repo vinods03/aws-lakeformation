@@ -1,0 +1,33 @@
+1. Create an IAM user lakeformation_admin with console access
+
+2. Attach the below policies to the above user:
+AdministratorAccess
+AWSLakeFormationDataAdmin
+
+
+3. Search for and go to AWS Lake Formation in the AWS console. 
+
+4. Go to Administration -> Administrative roles and tasks -> Data lake administrators -> Add lakeformation_admin user
+
+5. Log out and login as above user.
+
+6. Go to Administration -> Administrative roles and tasks -> Data lake administrators -> select lakeformation_admin user and Grant "Create database" permission.
+
+7. Create 3 S3 buckets with versioning and encryption enabled:
+vinod-lakeformation-raw-bucket
+vinod-lakeformation-processed-bucket
+vinod-lakeformation-curated-bucket
+
+3 folders created under vinod-lakeformation-raw-bucket
+input
+output
+athena
+
+below folders under vinod-lakeformation-processed-bucket
+input/data-preparation
+output
+
+8. Go back to AWS Lak Formation. Databases -> Create database.
+vinod-lakeformation-raw-database -> pointing to s3 bucket vinod-lakeformation-raw-bucket
+vinod-lakeformation-processed-database -> pointing to s3 bucket vinod-lakeformation-processed-bucket
+vinod-lakeformation-curated-database -> pointing to s3 bucket vinod-lakeformation-curated-bucket
